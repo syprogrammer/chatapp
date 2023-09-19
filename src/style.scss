@@ -13,7 +13,9 @@
         @content;
     }
 }
-
+.error-msg{
+    color: red !important;
+}
 .formContainer {
     background-color: #a7bcff;
     height: 100vh;

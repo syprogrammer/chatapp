@@ -6,7 +6,7 @@ const Chats = () => {
             {
                 [1, 2, 3, 4].map((item) => {
                     return (
-                        <div className="userChat">
+                        <div className="userChat" key={item}>
                             <img
                                 src="avatar.png"
                                 alt="avatar"
