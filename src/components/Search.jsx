@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { collection, query, where } from 'firebase/firestore'
+import { collection, query, where ,getDocs} from 'firebase/firestore'
 import { db } from '../../firebase'
 
 const Search = () => {
@@ -9,16 +9,18 @@ const Search = () => {
 
   const handleSearch = async () => {
     console.log(username)
-    const q = query(collection(db, "users",
-      where("displayName", "==", username)
-    ))
+   
+    const q = query(collection(db, "users"),
+     where("displayName", "==", username));
     console.log("q is", q)
     try {
-      const querySnapshot = await getDocs(q)
+      const querySnapshot = await getDocs(q);
       querySnapshot.forEach((doc) => {
-        console.log(doc.id, "=>", doc.data())
+        // doc.data() is never undefined for query doc snapshots
+        console.log(doc.id, " => ", doc.data());
         setUser(doc.data())
-      })
+      });
+      
     } catch (error) {
       setErr(error)
     }
@@ -42,9 +44,9 @@ const Search = () => {
       {
         user && (
           <div className="userChat">
-            <img src="/avatar.png" alt="" />
+            <img src={user.photoURL} alt="" />
             <div className="userChatInfo">
-              <span>Jane</span>
+              <span>{user.displayName}</span>
             </div>
           </div>
         )
