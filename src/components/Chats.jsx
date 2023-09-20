@@ -1,20 +1,49 @@
-import React from 'react'
+import { doc, onSnapshot } from 'firebase/firestore'
+import React, { useContext, useEffect, useState } from 'react'
+import { db } from '../../firebase'
+import { AuthContext } from '../context/AuthContext'
+import { ChatContext } from '../context/ChatContext'
 
 const Chats = () => {
+    const [chats, setChats] = useState([])
+    const { currentUser } = useContext(AuthContext)
+    const { dispatch } = useContext(ChatContext)
+
+    useEffect(() => {
+        const getChats = () => {
+            const unsub = onSnapshot(doc(db, "userChats", currentUser.uid), (doc) => {
+                console.log("currentData", doc.data())
+                setChats(doc.data())
+            })
+            return () => {
+                unsub
+            }
+        }
+        currentUser.uid && getChats()
+    }, [currentUser.uid])
+
+
+    const handleSelect = (user) => {
+        dispatch({ type: "CHANGE_USER", payload:user })
+    }
+
     return (
         <div className="chats">
             {
-                [1, 2, 3, 4].map((item) => {
+                Object.entries(chats)?.map((chat) => {
+                    console.log(chat)
                     return (
-                        <div className="userChat" key={item}>
+                        <div className="userChat" key={chat[0]}
+                            onClick={() => handleSelect(chat[1].userInfo)}
+                        >
                             <img
-                                src="avatar.png"
+                                src={chat[1]['userInfo'].photoURL}
                                 alt="avatar"
                             />
 
                             <div className="userChatInfo">
-                                <span>Jane</span>
-                                <p>Hello</p>
+                                <span>{chat[1]['userInfo'].displayName}</span>
+                                <p>{chat[1]['userInfo'].lastMessage?.text}</p>
                             </div>
 
                         </div>
